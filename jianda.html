@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教育心理学闪卡记忆</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .progress {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            height: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+
+        .flashcard {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease, opacity 0.5s ease, scale 0.5s ease;
+            cursor: pointer;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard.slide-out {
+            transform: translateX(100%) rotateZ(15deg);
+            opacity: 0;
+        }
+
+        .flashcard.delete-out {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+            transform: rotateY(180deg);
+            border: 2px solid #90caf9;
+        }
+
+        .card-content {
+            font-size: 18px;
+            line-height: 1.6;
+            max-height: 100%;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .card-front .card-content {
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .btn-skip {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .btn-skip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stats-item {
+            display: inline-block;
+            margin: 0 15px;
+        }
+
+        .completion-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .completion-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+        }
+
+        .completion-modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-restart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .card-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+            .card-container {
+                height: 350px;
+            }
+            
+            .card-content {
+                font-size: 16px;
+            }
+            
+            .card-front .card-content {
+                font-size: 18px;
+            }
+            
+            .controls {
+                gap: 15px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>教育心理学闪卡记忆</h1>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <p id="cardCounter">卡片 1 / 27</p>
+        </div>
+
+        <div class="card-container">
+            <div class="flashcard" id="flashcard">
+                <div class="card-face card-front">
+                    <div class="card-content" id="questionContent">载入中...</div>
+                    <div class="card-hint">点击卡片查看答案</div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="card-content" id="answerContent">载入中...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-skip" id="skipBtn">跳过</button>
+            <button class="btn btn-delete" id="deleteBtn">删除</button>
+        </div>
+
+        <div class="stats">
+            <div class="stats-item">
+                <strong>已复习:</strong> <span id="reviewedCount">0</span>
+            </div>
+            <div class="stats-item">
+                <strong>剩余:</strong> <span id="remainingCount">27</span>
+            </div>
+            <div class="stats-item">
+                <strong>总次数:</strong> <span id="totalReviews">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="completion-modal" id="completionModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🎉 学习完成！</h2>
+            <p class="modal-text">恭喜你完成了所有闪卡的学习！</p>
+            <p class="modal-text">总复习次数: <span id="finalReviewCount">0</span></p>
+            <button class="btn btn-restart" id="restartBtn">重新开始</button>
+        </div>
+    </div>
+
+    <script>
+        // 闪卡数据
+        const flashcardData = [
+            {
+                question: "简述教育心理学的研究对象。",
+                answer: "教育心理学研究学校教育过程中学与教的心理现象及其规律。"
+            },
+            {
+                question: "如何理解学习?",
+                answer: "学习是个体在特定情境下由于练习能的比较持久的变化。①学习是人与动物共有的普遍现象②学习是有机体后天习得经验的过程③学习表现为个体由于经验而发生的较稳定的变化。"
+            },
+            {
+                question: "比较经典性条件作用理论于操作性条件作用理论的区别。",
+                answer: "经典性条件作用由巴甫洛夫提出，强调通过中性刺激与无条件刺激的反复联结形成条件反射，认为学习是刺激引发反应的被动过程。操作性条件作用由斯金纳提出，主张行为结果影响行为频率，认为学习是主动操作环境以获得强化的过程。①行为性质不同:在经典性条件作用中，行为是无意的、被动的;操作性条件作用中，行为是有意的、主动的。②顺序不同:经典性条件作用遵循S-R(刺激-反应)模式，行为由刺激直接引发;操作性条件作用则为R-S(行为-结果)模式，行为先于结果发生，并通过结果调整后续行为。学习发生机制不同:经典性条件作用依赖中性刺激与无条件刺激的匹配从而形成条件反射;操作性条件作用强调强化或惩罚的行为后果对行为频率的影响。"
+            },
+            {
+                question: "简述观察学习的过程及条件。",
+                answer: "①注意过程:观察者记住从榜样情境中了解的行为。条件为示范行为和观察者的特征。②保持过程:观察者记住从榜样情境中了解的行为，以表象和言语形式将它们在记忆中进行表征、编码以及存储。条件为符号编码、符号复述和练习。③复制过程:观察者将头脑中有关榜样情景的表象和符号概念转为外显的行为。条件为基本技能、自我观察和反馈。④动机过程:观察者因表现所观察到的行为而受到激励。条件为对自己行为的评价反应和强化。"
+            },
+            {
+                question: "简述布鲁纳的结构教学观的主要观点。",
+                answer: "①布鲁纳强调学习的主动性和认知结构的重要性，认为教学的最终目的使促进\"对学科结构的一般理解\"②学科的基本结构是指一个学科围绕其基本概念、基本原理以及基本态度和方法形成的整体知识框架和思维框架③布鲁纳提倡将学科的基本结构放在编写教材和设计课程的中心地位④布鲁纳认为编排教材的最佳方法是以螺旋式上升的形式呈现学科的基本结构。"
+            },
+            {
+                question: "简述有意义学习及其条件。",
+                answer: "(1)有意义学习由奥苏贝尔提出，是指符号所代表的新知识与学习者认知结构中已有的适当观念建立实质性和非人为联系的过程。(2)有意义学习的条件:①外部条件:学习材料具有外部意义内部条件:a.学习者具有有意义学习的心向b.学习者认知结构中有适当的知识或观念c.学习者积极主动地使新知识与旧知识发生相互作用。"
+            },
+            {
+                question: "简述皮亚杰认知发展阶段理论及其在教育中的意义。",
+                answer: "(1)皮亚杰认为认知发展是认知结构不断重现的过程,并将其分为四个阶段:①感知运动阶段(0-2岁):该阶段儿童主要使用动作图式，通过感知与动作探索外部环境，发展客体永久性并表现出目标定向行为。②前运算阶段(2-7岁):该阶段儿童开始使用语言、符号表征从事简单的思维活动，儿童表现出自我中心主义，其思维具有单向性、不可逆和静止性。③具体运算阶段(7-11岁):该阶段儿童对具体事物初具逻辑推理形式。表现为去自我中心化，能理解事物的动态变化。思维可以逆转，形成守恒概念。④形式运算阶段(11岁至成年):该阶段儿童具有抽象推理能力，具有假设演绎思维，抽象思维和系统思维。(2)皮亚杰的认知发展阶段论的教育意义:①按儿童思维方式实施知识教学②按儿童认识发展的顺序设计课程③针对个别差异实施个别化教学④提供丰富的活动，引导学生主动探索，参加社会实践活动。"
+            },
+            {
+                question: "简述最近发展区对教学的启示。",
+                answer: "最近发展区由维果斯基提出，指学生现有的发展水平和将要达到的潜在发展水平之间的差异。①教学要走在发展的前面教师可以采用教学支架，即在学生试图解决超出她们当前知识水平的问题时给予支持和指导，帮助学生顺利通过最近发展区，使之最终能够独立完成任务。"
+            },
+            {
+                question: "什么是知识的表征,陈述性知识与程序性知识的表征分别是什么?",
+                answer: "知识的表征是指信息在人脑中的储存和呈现方式，它是个体知识学习的关键。(1)陈述性知识的表征①命题:最小的意义单位，由关系和论题构成②命题网络:将多个命题联结形成的网络(2)程序性知识的表征①产生式:以\"如果-那么(C-A)\"形式编码②产生式系统:多个产生式通过控制流联结形成的复杂技能。"
+            },
+            {
+                question: "教师如何促进学生获得概念?",
+                answer: "①以准确的语言明确揭示概念的本质特征②突出有关特征，控制好无关特征的数量和强度③提供概念范例，适当运用例证(变式)和比较④形成概念网络⑤在实践中运用概念。"
+            },
+            {
+                question: "影响原理学习的因素",
+                answer: "(1)内部条件①对相关概念的学习和理解②学习者的认知发展水平③学习者的语言表达能力④学习者的动机水平(2)外部条件:教师的语言命令。"
+            },
+            {
+                question: "原理学习的教学措施",
+                answer: "①了解学生对概念的理解和掌握的水平②创设原理学习的问题情境③设置言语指令,唤起对相关概念的回忆④强调原理运用,促进对原理的理解。"
+            },
+            {
+                question: "专家与新手问题解决能力的差异",
+                answer: "①知识差异②策略差异a.问题表征策略b.具体解题策略c.元认知策略③技能执行速度差异④问题表征时间差异⑤问题表征深度差异自我监控技能差异。"
+            },
+            {
+                question: "简述学习策略的分类",
+                answer: "根据麦基奇的分类，学习策略分为:(1)认知策略:即信息加工的策略①复述策略:通过重复强化记忆，如②精细加工策略:建立新旧知识的联系③组织策略:整合知识结构(2)元认知策略:即对认知过程的监控与调节①计划策略:设定目标、规划和时间安排②监视策略:自我检查学习进展③调节策略:根据反馈调整方法(3)资源管理策略:即优化学习资源的利用①时间管理:合理分配学习时间②努力管理:维持学习动机③学习环境管理:选择适宜的学习场所其他人的支持:利用外部资源。"
+            },
+            {
+                question: "什么是元认知",
+                answer: "元认知是对认知的认知，即个体关于自己认知过程的知识和调节这些过程的的能力。由弗拉维尔于1976年在《认知发展》一书中首次提出，包括三个成分:①元认知知识:个体对自身认知特点及外部任务要求的了解②元认知体验:在认知活动中产生的情绪或意识体验③元认知监控:对认知过程的实时监控。"
+            },
+            {
+                question: "有效学习策略的条件",
+                answer: "①原有知识背景②自我效能感③元认知发展水平④练习情境的相似与变化⑤有一套外显的可操作的技术。"
+            },
+            {
+                question: "动作技能形成的标志/熟练操作的特征",
+                answer: "①意识调控减弱，动作自动化②能利用细微线索③动觉反馈作用加强④形成动作程序的记忆图式⑤在不利的条件下仍能维持正常操作水平。"
+            },
+            {
+                question: "练习曲线的一般特征",
+                answer: "①总的趋势是练习成绩逐步提高，包括速度和准确性的提高②出现高原期:伴随练习，成绩并非一直上升，有时会出现暂时停顿甚至倒退③练习成绩的起伏现象④练习成绩的相对稳定的现象⑤练习曲线的个别差异。"
+            },
+            {
+                question: "如何合理组织练习",
+                answer: "①明确练习的目的和要求②合理分配练习时间③掌握正确的练习方法④及时反馈⑤进行心理练习:再实际联系之前先在头脑中反复思考身体动作的进行过程。"
+            },
+            {
+                question: "影响学习迁移的因素",
+                answer: "①学习材料的特点②经验的概括程度③对学习情境的理解④学习的心理准备状态⑤认知结构的特点⑥学习策略的水平。"
+            },
+            {
+                question: "2.促进学习迁移的方法",
+                answer: "①注意教学材料和内容的编排②改进教材呈现方式③加强教学方法的选择,促进学生学习方式的转变④改进对学生的评价。"
+            },
+            {
+                question: "品德与道德的关系",
+                answer: "(1)区别:①道德是社会现象，指特定群体共同遵守的行为规范总和(如诚信、公正)，依靠舆论和内心驱使维持，具有历史性和阶级性;②品德是个体心理特征，指个人内化道德规范后表现出的稳定行为倾向(如某人一贯诚实)，受生理、心理发展规律制约。(2)联①品德是道德的体现，是在道德影响下发展的②品德为道德的发展提供了依据和动力。"
+            },
+            {
+                question: "品德的结构",
+                answer: "①道德认识:对社会道德规范及其执行意义的认识②道德情感:由人的道德需要是否得到满足而引起的一种内心体验道德意志:个人在道德情境中，自觉地调节行为，克服内外困难，实现道德目的的心理过程④道德行为:在道德意向支配下表现出来的符合社会道德规范的行为，涉及道德行为方式和道德行为习惯。"
+            },
+            {
+                question: "道德认识转化为道德信念的条件",
+                answer: "①教育者言行一致②获得与道德规范要求相符合的道德经验③培养道德判断能力，进行道德评价④获得社会反馈。"
+            },
+            {
+                question: "学生不同的归因对未来学习行为有何影响",
+                answer: "①内外归因:影响学生对成功的情绪反应②稳定性归因:影响学生对成功的期望③可控性归因:影响学生的努力程度。"
+            },
+            {
+                question: "自我效能感对行为的影响:",
+                answer: "①决定人们对活动的选择，及对活动的坚持性②影响人们在困难面前的态度③影响新行为的获得和已有行为的表现④影响活动时的情绪。"
+            },
+            {
+                question: "培养和激发学习动机的措施",
+                answer: "(1)内部动机①激发兴趣，维持好奇心a.创设问题情境b.丰富材料呈现方法c.利用学习动机的迁移②设置合理的目标培养恰当的自我效能感④训练归因(2)外部动机①表达明确的期望②提供明确的、及时的、经常性的反馈③合理的运用外部奖励④有效的运用表扬(好于批评、惩罚)⑤合理组织竞赛活动a.竞赛不应太频繁b.让学生认识到竞赛的意义c.按能力分组d.鼓励自我竞赛。"
+            }
+        ];
+
+        // 应用状态
+        let currentCardIndex = 0;
+        let remainingCards = [...flashcardData];
+        let reviewedCount = 0;
+        let totalReviews = 0;
+        let isFlipped = false;
+
+        // DOM元素
+        const flashcard = document.getElementById('flashcard');
+        const questionContent = document.getElementById('questionContent');
+        const answerContent = document.getElementById('answerContent');
+        const skipBtn = document.getElementById('skipBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const progressBar = document.getElementById('progressBar');
+        const cardCounter = document.getElementById('cardCounter');
+        const reviewedCountEl = document.getElementById('reviewedCount');
+        const remainingCountEl = document.getElementById('remainingCount');
+        const totalReviewsEl = document.getElementById('totalReviews');
+        const completionModal = document.getElementById('completionModal');
+        const finalReviewCount = document.getElementById('finalReviewCount');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // 初始化
+        function init() {
+            loadCard();
+            updateStats();
+            
+            // 绑定事件
+            flashcard.addEventListener('click', flipCard);
+            skipBtn.addEventListener('click', skipCard);
+            deleteBtn.addEventListener('click', deleteCard);
+            restartBtn.addEventListener('click', restart);
+        }
+
+        // 加载卡片
+        function loadCard() {
+            if (remainingCards.length === 0) {
+                showCompletionModal();
+                return;
+            }
+            
+            currentCardIndex = 0;
+            const currentCard = remainingCards[currentCardIndex];
+            questionContent.textContent = currentCard.question;
+            answerContent.textContent = currentCard.answer;
+            
+            // 重置卡片状态
+            flashcard.classList.remove('flipped', 'slide-out', 'delete-out');
+            isFlipped = false;
+            
+            updateProgress();
+        }
+
+        // 翻转卡片
+        function flipCard() {
+            if (!isFlipped) {
+                flashcard.classList.add('flipped');
+                isFlipped = true;
+                totalReviews++;
+                updateStats();
+            }
+        }
+
+        // 跳过卡片
+        function skipCard() {
+            if (remainingCards.length <= 1) {
+                showCompletionModal();
+                return;
+            }
+            
+            flashcard.classList.add('slide-out');
+            
+            setTimeout(() => {
+                // 将当前卡片移到数组末尾
+                const skippedCard = remainingCards.shift();
+                remainingCards.push(skippedCard);
+                
+                loadCard();
+            }, 500);
+        }
+
+        // 删除卡片
+        function deleteCard() {
+            flashcard.classList.add('delete-out');
+            
+            setTimeout(() => {
+                // 从数组中删除当前卡片
+                remainingCards.splice(currentCardIndex, 1);
+                reviewedCount++;
+                
+                loadCard();
+                updateStats();
+            }, 500);
+        }
+
+        // 更新进度条
+        function updateProgress() {
+            const progress = (reviewedCount / flashcardData.length) * 100;
+            progressBar.style.width = progress + '%';
+            cardCounter.textContent = `卡片 ${reviewedCount + 1} / ${flashcardData.length}`;
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            reviewedCountEl.textContent = reviewedCount;
+            remainingCountEl.textContent = remainingCards.length;
+            totalReviewsEl.textContent = totalReviews;
+        }
+
+        // 显示完成模态框
+        function showCompletionModal() {
+            finalReviewCount.textContent = totalReviews;
+            completionModal.classList.add('show');
+        }
+
+        // 重新开始
+        function restart() {
+            remainingCards = [...flashcardData];
+            reviewedCount = 0;
+            totalReviews = 0;
+            isFlipped = false;
+            
+            completionModal.classList.remove('show');
+            
+            loadCard();
+            updateStats();
+        }
+
+        // 启动应用
+        init();
+    </script>
+</body>
+</html>

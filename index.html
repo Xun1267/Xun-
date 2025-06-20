@@ -1,0 +1,240 @@
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Xun的工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* 自定义样式，如果tailwind无法满足，可以在这里添加 */
+      .subject-card {
+          transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      }
+      .subject-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 font-sans antialiased">
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm py-4">
+      <div class="container mx-auto px-4 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800">
+          <i class="fas fa-book-open text-blue-500 mr-2"> </i>
+          Xun的工具箱
+        </h1>
+        <nav>
+          <ul class="flex space-x-6">
+            <li>
+              <a
+                class="text-gray-600 hover:text-blue-500 text-lg"
+                href="javascript:void(0);"
+              >
+                首页
+              </a>
+            </li>
+            <li>
+              <a
+                class="text-gray-600 hover:text-blue-500 text-lg"
+                href="javascript:void(0);"
+              >
+                关于我们
+              </a>
+            </li>
+            <li>
+              <a
+                class="text-gray-600 hover:text-blue-500 text-lg"
+                href="javascript:void(0);"
+              >
+                联系我们
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <!-- Hero Section -->
+    <section class="bg-blue-600 text-white py-20">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-5xl font-extrabold mb-4">选择您的学习科目</h2>
+        <p class="text-xl mb-8 opacity-90">
+          深入探索心理学与相关领域的知识宝库
+        </p>
+      </div>
+    </section>
+    <!-- Subject Selection Section -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <h3 class="text-4xl font-bold text-center text-gray-800 mb-12">
+          精选科目
+        </h3>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          id="subject-cards-container"
+        >
+          <!-- Subject Cards will be dynamically loaded here -->
+        </div>
+      </div>
+    </section>
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="container mx-auto px-4 text-center">
+        <p>© 2023 Xun 的工具箱. All rights reserved.</p>
+        <div class="flex justify-center space-x-6 mt-4">
+          <a class="text-gray-400 hover:text-white" href="javascript:void(0);">
+            <i class="fab fa-twitter text-2xl"> </i>
+          </a>
+          <a class="text-gray-400 hover:text-white" href="javascript:void(0);">
+            <i class="fab fa-facebook-f text-2xl"> </i>
+          </a>
+          <a class="text-gray-400 hover:text-white" href="javascript:void(0);">
+            <i class="fab fa-linkedin-in text-2xl"> </i>
+          </a>
+        </div>
+      </div>
+    </footer>
+    <script>
+      // 保存原生方法
+      var nativeElementQuerySelector = Element.prototype.querySelector;
+      var nativeDocumentQuerySelector = Document.prototype.querySelector;
+      function ytCustomQuerySelector(selector) {
+        // 第二步：尝试用选择器获取DOM元素
+        // 执行原生选择器查询
+        var foundElement = this === document ? nativeDocumentQuerySelector.call(this, selector) : nativeElementQuerySelector.call(this, selector);
+        if (foundElement) {
+          // 设置属性
+          if (!foundElement.hasAttribute('data-selectorname')) {
+            foundElement.setAttribute('data-selectorname', selector);
+          }
+          // 第三步：直接返回找到的元素
+          return foundElement;
+        }
+
+        // 如果通过选择器没找到，尝试通过data-selectorName属性查找
+        var allElements = document.querySelectorAll('[data-selectorname]');
+        for (var i = 0; i < allElements.length; i++) {
+          if (allElements[i].getAttribute('data-selectorname') === selector) {
+            return allElements[i];
+          }
+        }
+
+        // 如果都没找到，返回null
+        return null;
+      }
+
+      // 如果需要也重写querySelectorAll，可以类似实现
+      // 重写原生的querySelector
+      Document.prototype.querySelector = ytCustomQuerySelector;
+      Element.prototype.querySelector = ytCustomQuerySelector;
+      var nativeElementInsertBefore = Element.prototype.insertBefore;
+      function ytCustomInsertBefore(newNode, referenceNode) {
+        // 当前元素作为默认父元素
+        var defaultParentNode = this;
+
+        // 检查参考节点是否存在
+        if (!referenceNode) {
+          // 如果没有提供参考节点，直接添加到末尾
+          return nativeElementInsertBefore.call(defaultParentNode, newNode, null);
+        }
+
+        // 检查参考节点是否仍然是父节点的直接子节点
+        if (referenceNode.parentNode === defaultParentNode) {
+          // 正常情况：参考节点仍在父节点下，直接插入
+          return nativeElementInsertBefore.call(defaultParentNode, newNode, referenceNode);
+        }
+
+        // 检查参考节点是否有 data-ytparentvalue 属性（被移动出去的节点）
+        var referenceParentValue = referenceNode.getAttribute('data-ytparentvalue');
+        if (referenceParentValue) {
+          // 查找具有匹配 data-ytextravalue 的父元素
+          var actualParentNode = document.querySelector('[data-ytextravalue="' + referenceParentValue + '"]');
+          if (actualParentNode) {
+            // 获取参考节点原来的索引位置
+            var originalIndex = referenceNode.getAttribute('data-ytoriginindex');
+            if (originalIndex !== null && !isNaN(originalIndex)) {
+              // 获取实际父节点当前的所有子节点
+              var children = Array.from(actualParentNode.children);
+
+              // 查找应该插入的位置
+              for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                var childOriginalIndex = child.getAttribute('data-ytoriginindex');
+
+                // 如果子节点有原始索引，并且比参考节点的原始索引大
+                if (childOriginalIndex !== null && !isNaN(childOriginalIndex)) {
+                  if (parseInt(childOriginalIndex) > parseInt(originalIndex)) {
+                    // 找到第一个索引更大的节点，插入到它前面
+                    return nativeElementInsertBefore.call(actualParentNode, newNode, child);
+                  }
+                }
+              }
+
+              // 如果没有找到更大的索引，插入到最后
+              return nativeElementInsertBefore.call(actualParentNode, newNode, null);
+            }
+
+            // 没有原始索引信息，插入到实际父元素的最后
+            return nativeElementInsertBefore.call(actualParentNode, newNode, null);
+          }
+        }
+
+        // 默认情况：插入到当前父元素的最后
+        return nativeElementInsertBefore.call(defaultParentNode, newNode, null);
+      }
+
+      // 重写原生 insertBefore 方法
+      Element.prototype.insertBefore = ytCustomInsertBefore;
+
+      // 页面加载时初始化渲染
+      document.addEventListener('DOMContentLoaded', function () {
+        renderSubjectCards();
+      });
+      function renderSubjectCards() {
+        var subjects = [{
+          name: '教育心理学',
+          description: '探索学习、教学和教育过程中的心理学原理。',
+          icon: 'fas fa-graduation-cap',
+          link: 'educational-psychology.html' // 更新链接指向新页面
+        }, {
+          name: '心理测量学',
+          description: '研究心理测量理论和技术，包括量表编制与评估。',
+          icon: 'fas fa-chart-bar',
+          link: 'javascript:void(0);'
+        }, {
+          name: '变态心理学',
+          description: '了解心理障碍的诊断、分类、病因和治疗方法。',
+          icon: 'fas fa-brain',
+          link: 'javascript:void(0);'
+        }, {
+          name: 'SPSS',
+          description: '掌握SPSS统计软件在心理学研究中的应用。',
+          icon: 'fas fa-calculator',
+          link: 'javascript:void(0);'
+        }, {
+          name: '实验心理学',
+          description: '学习心理学实验设计、实施和数据分析。',
+          icon: 'fas fa-flask',
+          link: 'javascript:void(0);'
+        }, {
+          name: 'E-Prime',
+          description: '使用E-Prime软件进行心理学实验编程。',
+          icon: 'fas fa-laptop-code',
+          link: 'javascript:void(0);'
+        }];
+        var container = document.getElementById('subject-cards-container');
+        container.innerHTML = ''; // Clear existing content
+        subjects.forEach(function (subject) {
+          var card = document.createElement('div');
+          card.className = 'bg-white rounded-lg shadow-md overflow-hidden subject-card flex flex-col';
+          var imageUrl = "https://aidev.gemcoder.com/staticResource/echoAiSystemImages/d393718d4b3f76d5b38e6afba50cd187.png";
+          card.innerHTML = "\n\n                    <div class=\"p-6 flex-grow flex flex-col\">\n                        <div class=\"text-blue-500 text-4xl mb-4 text-center\">\n                            <i class=\"".concat(subject.icon, "\"></i>\n                        </div>\n                        <h4 class=\"text-2xl font-semibold text-gray-800 mb-3 text-center\">").concat(subject.name, "</h4>\n                        <p class=\"text-gray-600 text-center mb-6 flex-grow\">").concat(subject.description, "</p>\n                        <div class=\"text-center\">\n                            <a href=\"").concat(subject.link, "\" class=\"inline-block bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300\">\n                                \u8FDB\u5165\u5B66\u4E60 <i class=\"fas fa-arrow-right ml-2\"></i>\n                            </a>\n                        </div>\n                    </div>\n                ");
+          container.appendChild(card);
+        });
+      }
+    </script>
+  </body>
+</html>

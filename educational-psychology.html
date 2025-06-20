@@ -1,0 +1,257 @@
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>教育心理学 - Xun的工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* 自定义样式 */
+      .resource-card {
+          transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      }
+      .resource-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      /* PDF查看器模态框样式 */
+      .pdf-modal {
+          display: none;
+          position: fixed;
+          z-index: 1000;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.8);
+      }
+      .pdf-modal-content {
+          position: relative;
+          margin: 2% auto;
+          width: 90%;
+          height: 90%;
+          background-color: white;
+          border-radius: 8px;
+          overflow: hidden;
+      }
+      .pdf-close {
+          position: absolute;
+          right: 20px;
+          top: 10px;
+          font-size: 30px;
+          color: #333;
+          cursor: pointer;
+          z-index: 1001;
+          background-color: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+      .pdf-close:hover {
+          color: #999;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 font-sans antialiased">
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm py-4">
+      <div class="container mx-auto px-4 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800">
+          <a href="index.html" class="flex items-center">
+            <i class="fas fa-book-open text-blue-500 mr-2"> </i>
+            Xun的工具箱
+          </a>
+        </h1>
+        <nav>
+          <ul class="flex space-x-6">
+            <li>
+              <a
+                class="text-gray-600 hover:text-blue-500 text-lg"
+                href="index.html"
+              >
+                首页
+              </a>
+            </li>
+            <li>
+              <a
+                class="text-gray-600 hover:text-blue-500 text-lg"
+                href="javascript:void(0);"
+              >
+                关于我们
+              </a>
+            </li>
+            <li>
+              <a
+                class="text-gray-600 hover:text-blue-500 text-lg"
+                href="javascript:void(0);"
+              >
+                联系我们
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-16">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center mb-4">
+          <a href="index.html" class="text-white hover:text-blue-200 mr-4">
+            <i class="fas fa-arrow-left"></i> 返回
+          </a>
+          <span class="text-blue-200">|</span>
+          <span class="ml-4 text-blue-200">教育心理学</span>
+        </div>
+        <h2 class="text-4xl font-extrabold mb-4">教育心理学学习中心</h2>
+        <p class="text-xl opacity-90">
+          系统学习教育心理学理论，掌握教学与学习的心理学规律
+        </p>
+      </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">
+          学习资源
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          
+          <!-- 教育心理学课件 -->
+          <div class="bg-white rounded-lg shadow-md overflow-hidden resource-card">
+            <div class="p-8">
+              <div class="text-blue-500 text-5xl mb-4 text-center">
+                <i class="fas fa-file-pdf"></i>
+              </div>
+              <h4 class="text-2xl font-semibold text-gray-800 mb-3 text-center">
+                教育心理学课件
+              </h4>
+              <p class="text-gray-600 text-center mb-6">
+                完整的教育心理学课程讲义，包含理论基础、学习理论、知识学习、技能学习等核心内容。
+              </p>
+              <div class="text-center">
+                <button onclick="openPDF('教育课件.pdf')" class="inline-block bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition duration-300">
+                  查看课件 <i class="fas fa-eye ml-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 教育心理学简答题 -->
+          <div class="bg-white rounded-lg shadow-md overflow-hidden resource-card">
+            <div class="p-8">
+              <div class="text-green-500 text-5xl mb-4 text-center">
+                <i class="fas fa-question-circle"></i>
+              </div>
+              <h4 class="text-2xl font-semibold text-gray-800 mb-3 text-center">
+                教育心理学简答题
+              </h4>
+              <p class="text-gray-600 text-center mb-6">
+                精选教育心理学核心简答题，帮助您深入理解重要概念，提升答题技巧和理论应用能力。
+              </p>
+              <div class="text-center">
+                <a href="jianda.html" class="inline-block bg-green-500 text-white px-6 py-3 rounded-full hover:bg-green-600 transition duration-300">
+                  查看简答题 <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 教育心理学考点合辑 -->
+          <div class="bg-white rounded-lg shadow-md overflow-hidden resource-card">
+            <div class="p-8">
+              <div class="text-purple-500 text-5xl mb-4 text-center">
+                <i class="fas fa-bookmark"></i>
+              </div>
+              <h4 class="text-2xl font-semibold text-gray-800 mb-3 text-center">
+                教育心理学考点合辑
+              </h4>
+              <p class="text-gray-600 text-center mb-6">
+                系统整理教育心理学重要考点，涵盖各章节核心知识，助您高效备考，轻松掌握要点。
+              </p>
+              <div class="text-center">
+                <button onclick="openPDF('教育心理学考点合辑.pdf')" class="inline-block bg-purple-500 text-white px-6 py-3 rounded-full hover:bg-purple-600 transition duration-300">
+                  查看考点 <i class="fas fa-eye ml-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PDF Modal -->
+    <div id="pdfModal" class="pdf-modal">
+      <div class="pdf-modal-content">
+        <span class="pdf-close" onclick="closePDF()">&times;</span>
+        <iframe id="pdfViewer" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+      </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="container mx-auto px-4 text-center">
+        <p>© 2023 Xun 的工具箱. All rights reserved.</p>
+        <div class="flex justify-center space-x-6 mt-4">
+          <a class="text-gray-400 hover:text-white" href="javascript:void(0);">
+            <i class="fab fa-twitter text-2xl"> </i>
+          </a>
+          <a class="text-gray-400 hover:text-white" href="javascript:void(0);">
+            <i class="fab fa-facebook-f text-2xl"> </i>
+          </a>
+          <a class="text-gray-400 hover:text-white" href="javascript:void(0);">
+            <i class="fab fa-linkedin-in text-2xl"> </i>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // 打开PDF查看器
+      function openPDF(filename) {
+        var modal = document.getElementById('pdfModal');
+        var pdfViewer = document.getElementById('pdfViewer');
+        
+        // 设置PDF文件路径
+        pdfViewer.src = filename;
+        
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // 防止背景滚动
+      }
+
+      // 关闭PDF查看器
+      function closePDF() {
+        var modal = document.getElementById('pdfModal');
+        var pdfViewer = document.getElementById('pdfViewer');
+        
+        modal.style.display = 'none';
+        pdfViewer.src = ''; // 清空src以停止加载
+        document.body.style.overflow = 'auto'; // 恢复滚动
+      }
+
+      // 点击模态框外部时关闭
+      window.onclick = function(event) {
+        var modal = document.getElementById('pdfModal');
+        if (event.target == modal) {
+          closePDF();
+        }
+      }
+
+      // 按ESC键关闭模态框
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          closePDF();
+        }
+      });
+    </script>
+  </body>
+</html>
