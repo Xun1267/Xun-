@@ -17,46 +17,6 @@
           transform: translateY(-5px);
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
       }
-      /* PDF查看器模态框样式 */
-      .pdf-modal {
-          display: none;
-          position: fixed;
-          z-index: 1000;
-          left: 0;
-          top: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.8);
-      }
-      .pdf-modal-content {
-          position: relative;
-          margin: 2% auto;
-          width: 90%;
-          height: 90%;
-          background-color: white;
-          border-radius: 8px;
-          overflow: hidden;
-      }
-      .pdf-close {
-          position: absolute;
-          right: 20px;
-          top: 10px;
-          font-size: 30px;
-          color: #333;
-          cursor: pointer;
-          z-index: 1001;
-          background-color: white;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      }
-      .pdf-close:hover {
-          color: #999;
-      }
     </style>
   </head>
   <body class="bg-gray-100 font-sans antialiased">
@@ -123,28 +83,8 @@
         <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">
           学习资源
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           
-          <!-- 教育心理学课件 -->
-          <div class="bg-white rounded-lg shadow-md overflow-hidden resource-card">
-            <div class="p-8">
-              <div class="text-blue-500 text-5xl mb-4 text-center">
-                <i class="fas fa-file-pdf"></i>
-              </div>
-              <h4 class="text-2xl font-semibold text-gray-800 mb-3 text-center">
-                教育心理学课件
-              </h4>
-              <p class="text-gray-600 text-center mb-6">
-                完整的教育心理学课程讲义，包含理论基础、学习理论、知识学习、技能学习等核心内容。
-              </p>
-              <div class="text-center">
-                <button onclick="openPDF('教育课件.pdf')" class="inline-block bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition duration-300">
-                  查看课件 <i class="fas fa-eye ml-2"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
           <!-- 教育心理学简答题 -->
           <div class="bg-white rounded-lg shadow-md overflow-hidden resource-card">
             <div class="p-8">
@@ -178,9 +118,9 @@
                 系统整理教育心理学重要考点，涵盖各章节核心知识，助您高效备考，轻松掌握要点。
               </p>
               <div class="text-center">
-                <button onclick="openPDF('教育心理学考点合辑.pdf')" class="inline-block bg-purple-500 text-white px-6 py-3 rounded-full hover:bg-purple-600 transition duration-300">
-                  查看考点 <i class="fas fa-eye ml-2"></i>
-                </button>
+                <a href="kaodian.html" class="inline-block bg-purple-500 text-white px-6 py-3 rounded-full hover:bg-purple-600 transition duration-300">
+                  查看考点 <i class="fas fa-arrow-right ml-2"></i>
+                </a>
               </div>
             </div>
           </div>
@@ -188,14 +128,6 @@
         </div>
       </div>
     </section>
-
-    <!-- PDF Modal -->
-    <div id="pdfModal" class="pdf-modal">
-      <div class="pdf-modal-content">
-        <span class="pdf-close" onclick="closePDF()">&times;</span>
-        <iframe id="pdfViewer" src="" style="width: 100%; height: 100%; border: none;"></iframe>
-      </div>
-    </div>
 
     <!-- Footer Section -->
     <footer class="bg-gray-800 text-white py-8">
@@ -214,44 +146,5 @@
         </div>
       </div>
     </footer>
-
-    <script>
-      // 打开PDF查看器
-      function openPDF(filename) {
-        var modal = document.getElementById('pdfModal');
-        var pdfViewer = document.getElementById('pdfViewer');
-        
-        // 设置PDF文件路径
-        pdfViewer.src = filename;
-        
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden'; // 防止背景滚动
-      }
-
-      // 关闭PDF查看器
-      function closePDF() {
-        var modal = document.getElementById('pdfModal');
-        var pdfViewer = document.getElementById('pdfViewer');
-        
-        modal.style.display = 'none';
-        pdfViewer.src = ''; // 清空src以停止加载
-        document.body.style.overflow = 'auto'; // 恢复滚动
-      }
-
-      // 点击模态框外部时关闭
-      window.onclick = function(event) {
-        var modal = document.getElementById('pdfModal');
-        if (event.target == modal) {
-          closePDF();
-        }
-      }
-
-      // 按ESC键关闭模态框
-      document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-          closePDF();
-        }
-      });
-    </script>
   </body>
 </html>
